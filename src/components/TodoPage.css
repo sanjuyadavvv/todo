@@ -1,0 +1,175 @@
+/* TodoPage.css */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #f4f7fb;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.todo-container {
+  width: 100%;
+  min-height: 100vh;
+  overflow-y: auto;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding-top: 60px;
+}
+
+.todo-card {
+  width: 500px;
+
+  background: white;
+
+  padding: 30px;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.todo-title {
+  text-align: center;
+
+  margin-bottom: 24px;
+
+  color: #222;
+
+  font-size: 32px;
+
+  font-weight: bold;
+}
+
+.todo-input,
+.todo-textarea {
+  width: 100%;
+
+  padding: 14px;
+
+  border: 1px solid #dcdcdc;
+
+  border-radius: 10px;
+
+  margin-bottom: 16px;
+
+  font-size: 16px;
+
+  outline: none;
+
+  transition: 0.2s ease;
+}
+
+.todo-input:focus,
+.todo-textarea:focus {
+  border-color: #4f46e5;
+}
+
+.todo-textarea {
+  min-height: 100px;
+
+  resize: none;
+}
+
+.add-btn {
+  width: 100%;
+
+  padding: 14px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #4f46e5;
+
+  color: white;
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.add-btn:hover {
+  background: #4338ca;
+}
+
+.todo-list {
+  margin-top: 25px;
+
+  list-style: none;
+}
+
+.todo-item {
+  background: #f8fafc;
+
+  padding: 18px;
+
+  border-radius: 12px;
+
+  margin-bottom: 16px;
+
+  border: 1px solid #e2e8f0;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 16px;
+}
+
+.todo-content h3 {
+  color: #111827;
+
+  margin-bottom: 6px;
+
+  font-size: 18px;
+}
+
+.todo-content p {
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+.delete-btn {
+  border: none;
+
+  background: #ef4444;
+
+  color: white;
+
+  width: 40px;
+
+  height: 40px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-size: 18px;
+
+  transition: 0.2s ease;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
+
+.empty-text {
+  text-align: center;
+
+  color: #6b7280;
+
+  margin-top: 20px;
+}
