@@ -28,13 +28,17 @@ jobs:
 
       - name: Build and push backend image
         run: |
-          docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}:latest ./backend2
-          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}:latest
+          IMAGE_URI=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}
+          echo "Pushing to: $IMAGE_URI"
+          docker build -t $IMAGE_URI:latest ./backend2
+          docker push $IMAGE_URI:latest
 
       - name: Build and push frontend image
         run: |
-          docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}:latest ./frontend
-          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}:latest
+          IMAGE_URI=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}
+          echo "Pushing to: $IMAGE_URI"
+          docker build -t $IMAGE_URI:latest ./frontend
+          docker push $IMAGE_URI:latest
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.0
