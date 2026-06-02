@@ -1,4 +1,5 @@
 const API = import.meta.env.VITE_API_URL
+console.log('api url is ',API)
 import  type { Todo } from "../../types/types";
 import type { CreateTodoPayload } from "../../types/types";
 
