@@ -1,4 +1,6 @@
-const API = import.meta.env.VITE_API_URL
+const API =
+  import.meta.env.VITE_API_URL ||
+  `${window.location.protocol}//${window.location.hostname}:3000`
 console.log('api url is ',API)
 import  type { Todo } from "../../types/types";
 import type { CreateTodoPayload } from "../../types/types";
