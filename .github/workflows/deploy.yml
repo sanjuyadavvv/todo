@@ -1,35 +1,68 @@
-- name: Deploy to EC2
-  uses: appleboy/ssh-action@v1.2.0
-  with:
-    host: ${{ secrets.EC2_HOST }}
-    username: ${{ secrets.EC2_USER }}
-    key: ${{ secrets.EC2_SSH_KEY }}
-    script: |
-      aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
-        docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+name: Deploy to EC2
 
-      # Backend
-      docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}:latest
+on:
+  push:
+    branches: [main]
 
-      docker stop backend || true
-      docker rm backend || true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
-      docker run -d \
-        --name backend \
-        --restart unless-stopped \
-        -p 3000:3000 \
-        -e PORT=3000 \
-        -e MONGO_URL="${{ secrets.MONGO_URL }}" \
-        ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Frontend
-      docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}:latest
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      docker stop frontend || true
-      docker rm frontend || true
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        
 
-      docker run -d \
-        --name frontend \
-        --restart unless-stopped \
-        -p 80:80 \
-        ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}:latest
+      - name: Build and push backend image
+        run: |
+          IMAGE_URI=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}
+          echo "Pushing to: $IMAGE_URI"
+          docker build -t $IMAGE_URI:latest ./backend2
+          docker push $IMAGE_URI:latest
+
+      - name: Build and push frontend image
+        run: |
+          IMAGE_URI=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}
+          echo "Pushing to: $IMAGE_URI"
+          docker build --build-arg VITE_API_URL="${{ secrets.VITE_API_URL }}" -t $IMAGE_URI:latest ./frontend
+          docker push $IMAGE_URI:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+              docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+
+            docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}:latest
+            docker stop backend || true
+            docker rm backend || true
+            docker run -d \
+              --name backend \
+              -p 3000:3000 \
+               -e MONGO_URL=${{ secrets.MONGO_URL }} \
+              ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}:latest
+
+            docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}:latest
+            docker stop frontend || true
+            docker rm frontend || true
+            docker run -d \
+              --name frontend \
+              -p 80:80 \
+              ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}:latest

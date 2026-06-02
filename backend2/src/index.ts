@@ -24,12 +24,13 @@ app.use(
   })
 );
 const PORT=process.env.PORT
+const port = Number(PORT) || 3000
 app.get('/',(req,res)=>{
     res.send('listening to sanju ')
 })
 
 
 app.use('/todo',TodoRoutes)
-app.listen(PORT,()=>{
-console.log(`server is running on ${PORT}`)
+app.listen(port,()=>{
+console.log(`server is running on ${port}`)
 })
