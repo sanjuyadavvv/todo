@@ -1,4 +1,4 @@
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL_PRODUCTION || import.meta.env.VITE_API_URL_DEVELOPMENT || "http://localhost:5000";
 
 import  type { Todo } from "../../types/types";
 import type { CreateTodoPayload } from "../../types/types";
