@@ -1,4 +1,4 @@
-const API = import.meta.env.VITE_API_URL_PRODUCTION 
+const API = import.meta.env.VITE_API_URL
 import  type { Todo } from "../../types/types";
 import type { CreateTodoPayload } from "../../types/types";
 
