@@ -56,7 +56,9 @@ jobs:
             docker run -d \
               --name backend \
               -p 3000:3000 \
-              --env-file /home/ubuntu/.env.backend \
+               -e PORT=${{ secrets.PORT }} \
+               -e MONGO_URL=${{ secrets.MONGO_URL }} \
+              ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}:latest
               ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}:latest
 
             docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}:latest
