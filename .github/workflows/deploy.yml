@@ -29,13 +29,13 @@ jobs:
 
       - name: Build and push backend image
         run: |
-          docker build -t ${{ secrets.ECR_REPOSITORY_URI_BACKEND }}:latest ./backend2
-          docker push ${{ secrets.ECR_REPOSITORY_URI_BACKEND }}:latest
+          docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}:latest ./backend2
+          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}:latest
 
       - name: Build and push frontend image
         run: |
-          docker build -t ${{ secrets.ECR_REPOSITORY_URI_FRONTEND }}:latest ./frontend
-          docker push ${{ secrets.ECR_REPOSITORY_URI_FRONTEND }}:latest
+          docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}:latest ./frontend
+          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}:latest
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.0
@@ -45,21 +45,21 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
-              docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY_URI_BACKEND }}
+              docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
 
-            docker pull ${{ secrets.ECR_REPOSITORY_URI_BACKEND }}:latest
+            docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}:latest
             docker stop backend || true
             docker rm backend || true
             docker run -d \
               --name backend \
               -p 3000:3000 \
               --env-file /home/ubuntu/.env.backend \
-              ${{ secrets.ECR_REPOSITORY_URI_BACKEND }}:latest
+              ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_BACKEND }}:latest
 
-            docker pull ${{ secrets.ECR_REPOSITORY_URI_FRONTEND }}:latest
+            docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}:latest
             docker stop frontend || true
             docker rm frontend || true
             docker run -d \
               --name frontend \
               -p 80:80 \
-              ${{ secrets.ECR_REPOSITORY_URI_FRONTEND }}:latest
+              ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}:latest
