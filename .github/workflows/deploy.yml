@@ -37,9 +37,7 @@ jobs:
         run: |
           IMAGE_URI=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPO_FRONTEND }}
           echo "Pushing to: $IMAGE_URI"
-          docker build \--build-arg VITE_API_URL=${{ secrets.VITE_API_URL }}\
-          -t $IMAGE_URI:latest ./frontend
-
+          docker build --build-arg VITE_API_URL="${{ secrets.VITE_API_URL }}" -t $IMAGE_URI:latest ./frontend
           docker push $IMAGE_URI:latest
 
       - name: Deploy to EC2
